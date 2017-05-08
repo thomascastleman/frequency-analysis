@@ -1,7 +1,5 @@
 import java.util.*;
 import java.io.*;
-import java.text.NumberFormat;
-import java.text.DecimalFormat;
 
 class Text {
 
@@ -83,15 +81,24 @@ class Text {
 			words.put(max, 0.0);
 		}
 
-		// format percentages to 3 dec places
-		NumberFormat formatter = new DecimalFormat("#0.000");
-
 		System.out.println("Frequencies (top " + collectionsInOrder.size() + " results): ");
 
 		// display top frequencies
 		for (int i = 0; i < collectionsInOrder.size(); i++) {
 			int count = (int) Math.floor((frequencies.get(i) / 100) * total);
-			System.out.println(formatter.format(frequencies.get(i)) + "% ----> " + collectionsInOrder.get(i) + " (" + count + ")");
+
+			// show frequency and occurence
+			System.out.printf("%.3f%%\t(%d)\t", frequencies.get(i), count);
+
+			// print phrase
+			System.out.printf("\"");
+			for (int j = 0; j < collectionsInOrder.get(i).size(); j++) {
+				System.out.printf("%s", collectionsInOrder.get(i).get(j));
+				if (j != collectionsInOrder.get(i).size() - 1) {
+					System.out.print(" ");
+				}
+			}
+			System.out.printf("\"\n");
 		}
 	}
 
@@ -108,6 +115,14 @@ class Text {
 		for (int i = 0; i < w.size() - order; i++) {
 			// get group of order length
 			ArrayList<String> sub = new ArrayList<String>(w.subList(i, i + order));
+
+			// get rid of ending punctuation
+			for (int j = 0; j < sub.size(); j++) {
+				String last = Character.toString(sub.get(j).charAt(sub.get(j).length() - 1));
+				String str = sub.get(j).substring(0, sub.get(j).length() - 1);
+				sub.set(j, str + last.replaceAll("\\W", ""));
+			}
+
 			// if no hashmap value yet
 			if (words.get(sub) == null) {
 				// add to words
